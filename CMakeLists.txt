@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.12)
 
 project(grpc-memo C CXX)
 
-set(LIBRARY_DIR ${PROJECT_SOURCE_DIR}/../_build)
+set(LIBRARY_DIR ${PROJECT_SOURCE_DIR}/_build)
 
 find_package(gRPC REQUIRED)
 find_package(CLI11 REQUIRED)

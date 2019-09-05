@@ -9,7 +9,7 @@ static_resources:
       - name: envoy.http_connection_manager
         config:
           codec_type: auto
-          stat_prefix: ingress_http
+          stat_prefix: front-envoy
           route_config:
             name: grpc_route
             virtual_hosts:
@@ -20,7 +20,7 @@ static_resources:
               - match:
                   prefix: "/"
                 route:
-                  cluster: gateway_cluster
+                  cluster: apps-cluster
                   timeout: 300s
           access_log:
           - name: envoy.file_access_log
@@ -30,7 +30,7 @@ static_resources:
           - name: envoy.router
             config: {}
   clusters:
-  - name: gateway_cluster
+  - name: apps-cluster
     connect_timeout: 0.25s
     type: strict_dns
     lb_policy: round_robin
@@ -42,19 +42,32 @@ static_resources:
       healthy_threshold: 2
       tcp_health_check: {}
     load_assignment:
-      cluster_name: gateway_cluster
+      cluster_name: apps-cluster
       endpoints:
       - lb_endpoints:
         - endpoint:
             address:
               socket_address:
-                address: host.docker.internal
+                address: app1-envoy
                 port_value: 50052
         - endpoint:
             address:
               socket_address:
-                address: host.docker.internal
+                address: app2-envoy
                 port_value: 50053
+  - name: "statsd-exporter"
+    connect_timeout: "0.25s"
+    type: "strict_dns"
+    lb_policy: "ROUND_ROBIN"
+    hosts:
+    - socket_address:
+        address: "statsd-exporter"
+        port_value: 9125
+stats_sinks:
+- name: "envoy.statsd"
+  config:
+    tcp_cluster_name: "statsd-exporter"
+    prefix: front-envoy
 admin:
   access_log_path: /dev/stdout
   address:

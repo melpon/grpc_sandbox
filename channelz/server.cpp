@@ -35,11 +35,11 @@ class GreeterServiceImpl final : public helloworld::Greeter::Service {
 
 class GrpcServer final {
 public:
-  void Run() {
+  void Run(int port) {
     // channelz を有効にするおまじない
     ::grpc::channelz::experimental::InitChannelzService();
 
-    std::string server_address("0.0.0.0:50051");
+    std::string server_address("0.0.0.0:" + std::to_string(port));
     GreeterServiceImpl service;
 
     grpc::ServerBuilder builder;
@@ -61,6 +61,9 @@ public:
 
 static int run_grpc(int argc, char** argv) {
   CLI::App app("channelz-server");
+  int port = 50051;
+
+  app.add_option("--port", port, "ポート番号")->check(CLI::Range(0, 65535));
 
   try {
     app.parse(argc, argv);
@@ -69,7 +72,7 @@ static int run_grpc(int argc, char** argv) {
   }
 
   GrpcServer grpc_server;
-  grpc_server.Run();
+  grpc_server.Run(port);
   return 0;
 }
 
