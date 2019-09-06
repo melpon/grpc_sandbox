@@ -14,4 +14,9 @@
 
 ## Envoy の統計情報を Grafana で確認する
 
-`./build.sh channelz-server` を実行して `channelz-server` を作る。
+- `./build.sh channelz-server` を実行して `channelz-server` を作る。
+- 別窓で `./build/channelz-server --port 50062` を実行する
+- 別窓で `./build/channelz-server --port 50063` を実行する
+- 別窓で `docker-compose up` を実行する
+- `./grpc_cli ls localhost:50051` や `./grpc_cli call localhost:50051 SayHello 'name: "foo"'` などを何度か実行して正常に結果が返ってくることを確認する
+- ブラウザで `localhost:3000` を開いて admin/admin で Grafana にログインしてダッシュボードで結果が見れるのを確認する
