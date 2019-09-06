@@ -1,31 +1,30 @@
 version: '3'
 services:
   front-envoy:
-    image: envoyproxy/envoy-alpine:v1.7.0
+    image: envoyproxy/envoy:v1.11.1
     volumes:
       - ./envoy/front-envoy-config.yaml:/etc/envoy-config.yaml
     ports:
-      - "50051:50051"
       - "8001:8001"
-    command: "/usr/local/bin/envoy -c /etc/envoy-config.yaml --v2-config-only -l info --service-cluster 'front-envoy' --service-node 'front-envoy' --log-format '[METADATA][%Y-%m-%d %T.%e][%t][%l][%n] %v'"
+      - "50051:50051"
+    command: "/usr/local/bin/envoy -c /etc/envoy-config.yaml -l info --service-cluster 'front-envoy' --service-node 'front-envoy' --log-format '[METADATA][%Y-%m-%d %T.%e][%t][%l][%n] %v'"
 
   app1-envoy:
-    image: envoyproxy/envoy-alpine:v1.7.0
+    image: envoyproxy/envoy:v1.11.1
     volumes:
       - ./envoy/app1-envoy-config.yaml:/etc/envoy-config.yaml
     ports:
       - "50052:50052"
-      - "8002:8002"
-    command: "/usr/local/bin/envoy -c /etc/envoy-config.yaml --v2-config-only -l info --service-cluster 'app1-envoy' --service-node 'app1-envoy' --log-format '[METADATA][%Y-%m-%d %T.%e][%t][%l][%n] %v'"
+    command: "/usr/local/bin/envoy -c /etc/envoy-config.yaml -l info --service-cluster 'app1-envoy' --service-node 'app1-envoy'"
 
   app2-envoy:
-    image: envoyproxy/envoy-alpine:v1.7.0
+    image: envoyproxy/envoy:v1.11.1
     volumes:
       - ./envoy/app2-envoy-config.yaml:/etc/envoy-config.yaml
     ports:
       - "50053:50053"
       - "8003:8003"
-    command: "/usr/local/bin/envoy -c /etc/envoy-config.yaml --v2-config-only -l info --service-cluster 'app2-envoy' --service-node 'app2-envoy' --log-format '[METADATA][%Y-%m-%d %T.%e][%t][%l][%n] %v'"  
+    command: "/usr/local/bin/envoy -c /etc/envoy-config.yaml -l info --service-cluster 'app2-envoy' --service-node 'app2-envoy' --log-format '[METADATA][%Y-%m-%d %T.%e][%t][%l][%n] %v'"  
 
   statsd-exporter:
     image: prom/statsd-exporter:latest
